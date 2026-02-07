@@ -6,7 +6,7 @@ Use this checklist to verify all features are working correctly.
 - [ ] Backend dependencies installed (`cd backend && npm install`)
 - [ ] Frontend dependencies installed (`cd frontend && npm install`)
 - [ ] MongoDB is running and accessible
-- [ ] Firebase project created with Storage enabled
+- [ ] Cloudinary account created (free tier available)
 - [ ] `backend/.env` configured with valid credentials
 - [ ] `frontend/.env` configured with API URL
 
@@ -15,7 +15,7 @@ Use this checklist to verify all features are working correctly.
 ### Server Startup
 - [ ] Backend starts without errors (`cd backend && npm run dev`)
 - [ ] See "MongoDB Connected" message
-- [ ] See "Firebase Admin initialized" message
+- [ ] See "Cloudinary initialized" message
 - [ ] See "Server running on port 5000" message
 - [ ] Health check works: `curl http://localhost:5000/health`
 
@@ -31,7 +31,7 @@ Use this checklist to verify all features are working correctly.
 - [ ] Upload medium file (5MB)
 - [ ] Upload PDF document
 - [ ] Upload image file (JPG/PNG)
-- [ ] Verify Firebase Storage shows uploaded files
+- [ ] Verify Cloudinary Media Library shows uploaded files in vaultlink folder
 - [ ] Verify file metadata is correct (name, size)
 
 ### Content Retrieval Tests
@@ -60,7 +60,7 @@ Use this checklist to verify all features are working correctly.
 - [ ] Content returns 410 Gone status
 - [ ] Wait 5 more minutes (for cleanup job)
 - [ ] Content is removed from MongoDB
-- [ ] File is removed from Firebase Storage (if applicable)
+- [ ] File is removed from Cloudinary (if applicable - check Media Library)
 
 ### Error Handling
 - [ ] Invalid request format returns proper error message

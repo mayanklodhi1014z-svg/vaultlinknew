@@ -87,7 +87,7 @@ if [ ! -f "backend/.env" ]; then
     cp backend/.env.example backend/.env
     echo -e "${YELLOW}⚠ Please edit backend/.env and add your configuration:${NC}"
     echo "  - MongoDB URI"
-    echo "  - Firebase credentials"
+    echo "  - Cloudinary credentials"
     echo ""
     echo "Run this script again after configuration."
     exit 1
