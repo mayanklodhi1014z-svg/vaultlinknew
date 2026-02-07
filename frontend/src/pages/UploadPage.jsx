@@ -15,39 +15,52 @@ const UploadPage = () => {
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError('');
-    setShareUrl('');
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  setShareUrl('');
+  
+  // Validation
+  if (uploadType === 'text' && !textContent.trim()) {
+    setError('Please enter some text content');
+    return;
+  }
+  
+  if (uploadType === 'file' && !selectedFile) {
+    setError('Please select a file to upload');
+    return;
+  }
+
+  setLoading(true);
+
+  try {
+    const formData = new FormData();
+    formData.append('type', uploadType);
     
-    // Validation
-    if (uploadType === 'text' && !textContent.trim()) {
-      setError('Please enter some text content');
-      return;
+    if (uploadType === 'text') {
+      formData.append('content', textContent);
+    } else {
+      formData.append('file', selectedFile);
     }
     
-    if (uploadType === 'file' && !selectedFile) {
-      setError('Please select a file to upload');
-      return;
-    }
+if (expiryDate) {
+  const localDate = new Date(expiryDate);
+  
+  // Get the timezone offset and adjust
+  const timezoneOffset = localDate.getTimezoneOffset() * 60000; // offset in milliseconds
+  const adjustedDate = new Date(localDate.getTime() - timezoneOffset);
+  const isoDate = adjustedDate.toISOString();
+  
+  console.log('Expiry Date Selected (local):', expiryDate);
+  console.log('Adjusted for timezone:', adjustedDate);
+  console.log('ISO Format:', isoDate);
+  console.log('Current Time:', new Date().toISOString());
+  
+  formData.append('expiryDate', isoDate);
+}
 
-    setLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append('type', uploadType);
-      
-      if (uploadType === 'text') {
-        formData.append('content', textContent);
-      } else {
-        formData.append('file', selectedFile);
-      }
-      
-      if (expiryDate) {
-        formData.append('expiryDate', new Date(expiryDate).toISOString());
-      }
-
-      const response = await uploadContent(formData);
+    const response = await uploadContent(formData);
+    // ... rest of the code
       
       if (response.success) {
         setShareUrl(response.shareUrl);

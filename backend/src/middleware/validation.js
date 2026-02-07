@@ -20,15 +20,18 @@ export const validateUpload = [
     .isISO8601()
     .withMessage('Expiry date must be in ISO 8601 format')
     .custom((value) => {
-      const expiryDate = new Date(value);
-      if (expiryDate <= new Date()) {
-        throw new Error('Expiry date must be in the future');
-      }
-      return true;
-    }),
+  const expiryDate = new Date(value);
+  const now = new Date();
+  // Allow dates that are at least 1 minute in the future (with 5 second buffer for processing)
+  const minFutureTime = new Date(now.getTime() - 5000); // 5 seconds buffer
   
-  (req, res, next) => {
-    const errors = validationResult(req);
+  if (expiryDate <= minFutureTime) {
+    throw new Error('Expiry date must be in the future');
+  }
+  return true;
+}),
+  
+  (req, res, next) => {    const errors = validationResult(req);
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,

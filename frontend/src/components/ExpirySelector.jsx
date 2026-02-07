@@ -49,7 +49,7 @@ const ExpirySelector = ({ expiryDate, setExpiryDate }) => {
         value={expiryDate}
         onChange={(e) => setExpiryDate(e.target.value)}
         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-        min={new Date().toISOString().slice(0, 16)}
+        min={new Date(Date.now() + 60000).toISOString().slice(0, 16)}
       />
       
       <p className="text-xs text-gray-500">
