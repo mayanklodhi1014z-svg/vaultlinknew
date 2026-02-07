@@ -128,8 +128,7 @@ This document outlines the security measures implemented in VaultLink and any re
 
 ### Protected Secrets
 - MongoDB connection strings
-- Firebase credentials (private key, client email)
-- Firebase storage bucket name
+- Cloudinary credentials (cloud name, API key, API secret)
 
 ### Best Practices
 ✅ .env files excluded from git
@@ -144,8 +143,8 @@ This document outlines the security measures implemented in VaultLink and any re
    - Enable authentication
    - Use connection string with TLS
    - Restrict network access
-3. **Firebase Security**:
-   - Properly configure security rules
+3. **Cloudinary Security**:
+   - Keep API credentials secure
    - Monitor usage and costs
    - Set up alerts for unusual activity
 4. **Monitoring**:

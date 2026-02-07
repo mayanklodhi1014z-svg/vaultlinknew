@@ -210,7 +210,7 @@ Use this checklist to verify all features are working correctly.
 ### Cleanup Job
 - [ ] Cron job runs every 5 minutes (check logs)
 - [ ] Expired content is deleted
-- [ ] Files are removed from Firebase
+- [ ] Files are removed from Cloudinary
 - [ ] No errors in cleanup logs
 
 ## Security Testing
@@ -239,7 +239,7 @@ Use this checklist to verify all features are working correctly.
 - [ ] Production .env files configured
 - [ ] MongoDB uses authentication
 - [ ] MongoDB connection uses TLS
-- [ ] Firebase credentials are secure
+- [ ] Cloudinary credentials are secure
 - [ ] CORS configured for production domain
 
 ### Build Process
@@ -254,7 +254,7 @@ Use this checklist to verify all features are working correctly.
 - [ ] Error logging is working
 - [ ] Cleanup job logs are visible
 - [ ] Can monitor MongoDB queries
-- [ ] Firebase usage is tracked
+- [ ] Cloudinary usage is tracked
 
 ### Security Scan
 - [ ] npm audit shows 0 vulnerabilities
