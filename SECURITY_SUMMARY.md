@@ -37,10 +37,10 @@ This document outlines the security measures implemented in VaultLink and any re
 - **Environment-based**: Frontend URL from environment variables
 
 ### 6. File Storage Security ✅
-- **Firebase Storage**: Google's enterprise-grade security
+- **Cloudinary**: Enterprise-grade cloud storage security
 - **Public URLs**: Files are accessible but require unique ID
 - **Cleanup**: Automatic deletion of expired files
-- **Storage Path Tracking**: Reliable file deletion without URL parsing
+- **Storage Path Tracking**: Reliable file deletion using Cloudinary public_id
 
 ### 7. Data Expiration ✅
 - **Automatic Cleanup**: Cron job runs every 5 minutes
@@ -64,9 +64,9 @@ This document outlines the security measures implemented in VaultLink and any re
    - **Mitigation**: Short expiry times, unique URLs
 
 2. **No Encryption at Rest**
-   - Files stored as-is in Firebase Storage
+   - Files stored as-is in Cloudinary
    - Text stored as plain text in MongoDB
-   - **Mitigation**: Firebase provides default encryption, MongoDB connection can use TLS
+   - **Mitigation**: Cloudinary provides default security, MongoDB connection can use TLS
 
 3. **No One-Time Links**
    - Links can be accessed multiple times until expiry
@@ -128,8 +128,7 @@ This document outlines the security measures implemented in VaultLink and any re
 
 ### Protected Secrets
 - MongoDB connection strings
-- Firebase credentials (private key, client email)
-- Firebase storage bucket name
+- Cloudinary credentials (cloud name, API key, API secret)
 
 ### Best Practices
 ✅ .env files excluded from git
@@ -144,8 +143,8 @@ This document outlines the security measures implemented in VaultLink and any re
    - Enable authentication
    - Use connection string with TLS
    - Restrict network access
-3. **Firebase Security**:
-   - Properly configure security rules
+3. **Cloudinary Security**:
+   - Keep API credentials secure
    - Monitor usage and costs
    - Set up alerts for unusual activity
 4. **Monitoring**:

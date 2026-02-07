@@ -36,7 +36,7 @@ VaultLink allows users to upload text content or files and share them securely u
 - **Secure Link Generation**: Cryptographically secure unique IDs using nanoid
 - **Automatic Expiration**: Default 10-minute expiry with custom time selection
 - **Clean UI**: Modern, responsive interface built with React and Tailwind CSS
-- **File Storage**: Firebase Storage integration for reliable file hosting
+- **File Storage**: Cloudinary integration for reliable file hosting
 - **Automatic Cleanup**: Background cron job removes expired content every 5 minutes
 - **File Size Limits**: Maximum 10MB per upload
 - **Error Handling**: Comprehensive validation and user-friendly error messages
@@ -54,7 +54,7 @@ VaultLink allows users to upload text content or files and share them securely u
 - **Node.js** - Runtime environment
 - **Express.js** - Web framework
 - **MongoDB** - NoSQL database (via Mongoose ODM)
-- **Firebase Admin SDK** - Cloud storage
+- **Cloudinary** - Cloud storage and media management
 - **Multer** - File upload middleware
 - **nanoid** - Unique ID generation
 - **node-cron** - Scheduled cleanup jobs
@@ -65,7 +65,7 @@ VaultLink allows users to upload text content or files and share them securely u
 ### Prerequisites
 - Node.js (v18 or higher)
 - MongoDB (local installation or MongoDB Atlas account)
-- Firebase project with Storage enabled
+- Cloudinary account (free tier available)
 - Git
 
 ### 1. Clone the Repository
@@ -93,17 +93,19 @@ Edit `.env` with your configuration:
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/vaultlink
-FIREBASE_PROJECT_ID=your-firebase-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
-FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here
 FRONTEND_URL=http://localhost:5173
 ```
 
-**Note**: For Firebase setup:
-1. Go to Firebase Console → Project Settings → Service Accounts
-2. Generate new private key (downloads JSON file)
-3. Use values from that JSON for the environment variables
+**Note**: For Cloudinary setup:
+1. Sign up at [Cloudinary](https://cloudinary.com) (free tier available)
+2. Go to Dashboard
+3. Copy your credentials:
+   - Cloud Name → `CLOUDINARY_CLOUD_NAME`
+   - API Key → `CLOUDINARY_API_KEY`
+   - API Secret → `CLOUDINARY_API_SECRET`
 
 #### Start Backend Server
 ```bash
@@ -228,7 +230,7 @@ Retrieve content using the unique ID from the share link.
   "type": "file",
   "fileName": "document.pdf",
   "fileSize": 1024000,
-  "downloadUrl": "https://storage.googleapis.com/...",
+  "downloadUrl": "https://res.cloudinary.com/...",
   "expiresAt": "2026-02-07T12:00:00.000Z"
 }
 ```
@@ -303,7 +305,7 @@ curl http://localhost:5000/api/content/UNIQUE_ID
 For detailed testing instructions including:
 - Frontend UI testing
 - End-to-end testing scenarios
-- MongoDB and Firebase verification
+- MongoDB and Cloudinary verification
 - Production testing checklist
 
 See **[TESTING.md](TESTING.md)** for the complete testing guide.
@@ -316,12 +318,13 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 - **Scalability**: Easy horizontal scaling for future growth
 - **TTL Indexes**: Native support for automatic document expiration (though we use cron for more control)
 
-### Why Firebase Storage?
-- **Reliability**: Google's infrastructure ensures high availability
-- **Easy Integration**: Firebase Admin SDK simplifies authentication and file operations
-- **Scalability**: Automatically handles traffic spikes
-- **Global CDN**: Fast content delivery worldwide
-- **Cost-Effective**: Pay-as-you-go pricing with generous free tier
+### Why Cloudinary?
+- **Reliability**: Enterprise-grade infrastructure ensures high availability
+- **Easy Integration**: Simple API and SDK for file operations
+- **Scalability**: Automatically handles traffic spikes and storage needs
+- **Global CDN**: Fast content delivery worldwide with optimized media delivery
+- **Cost-Effective**: Generous free tier with pay-as-you-go pricing
+- **Media Management**: Built-in transformations and optimizations
 
 ### Why nanoid for Unique IDs?
 - **Security**: Cryptographically secure random generation
@@ -356,14 +359,14 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 - **Future Enhancement**: Could implement user-based limits with authentication
 
 ### Storage Costs
-- **Firebase Free Tier**: 5GB storage, 1GB/day download
+- **Cloudinary Free Tier**: 25GB storage, 25GB/month bandwidth
 - **Cleanup Strategy**: 5-minute cron job minimizes storage usage
-- **Cost Scaling**: Consider moving to AWS S3 or similar at scale
+- **Cost Scaling**: Cloudinary scales automatically with usage-based pricing
 
 ### Security Considerations
 - **XSS Prevention**: Text content is sanitized before storage
 - **No Authentication**: Anyone with the link can access content
-- **No Encryption**: Files stored as-is (not encrypted at rest beyond Firebase's default)
+- **No Encryption**: Files stored as-is (not encrypted at rest beyond Cloudinary's default)
 - **Future Enhancement**: Add optional password protection, one-time links
 
 ### Performance
@@ -416,7 +419,7 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
               │               │         │          │
               ▼               ▼         ▼          ▼
     ┌──────────────┐  ┌──────────────────┐  ┌──────────────┐
-    │   MongoDB    │  │ Firebase Storage │  │  Cron Job    │
+    │   MongoDB    │  │   Cloudinary     │  │  Cron Job    │
     │              │  │                  │  │              │
     │ - uniqueId   │  │ - File uploads   │  │ - Runs every │
     │ - content    │  │ - Public URLs    │  │   5 minutes  │
@@ -429,7 +432,7 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 1. User selects upload type (text/file) and sets expiry
 2. Frontend sends POST request with form data
 3. Backend generates unique ID using nanoid
-4. For files: Upload to Firebase Storage → get public URL
+4. For files: Upload to Cloudinary → get public URL
 5. Save metadata to MongoDB
 6. Return shareable link to user
 
@@ -445,7 +448,7 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 1. Cron job runs every 5 minutes
 2. Query MongoDB for expired content (expiresAt < now)
 3. For each expired item:
-   - Delete file from Firebase Storage (if file type)
+   - Delete file from Cloudinary (if file type)
    - Delete document from MongoDB
 4. Log results and continue
 

@@ -16,7 +16,7 @@ This guide provides step-by-step instructions for testing the VaultLink applicat
 Before testing, ensure you have:
 - ✅ Node.js 18+ installed (`node --version`)
 - ✅ MongoDB running (local or Atlas)
-- ✅ Firebase project created with Storage enabled
+- ✅ Cloudinary account created (free tier available)
 - ✅ Git installed
 
 ## Quick Start
@@ -56,24 +56,19 @@ Edit `backend/.env` with your configuration:
 PORT=5000
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/vaultlink
-FIREBASE_PROJECT_ID=your-firebase-project-id
-FIREBASE_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nYour-Firebase-Private-Key\n-----END PRIVATE KEY-----\n"
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk@your-project.iam.gserviceaccount.com
-FIREBASE_STORAGE_BUCKET=your-project.appspot.com
+CLOUDINARY_CLOUD_NAME=your_cloud_name_here
+CLOUDINARY_API_KEY=your_api_key_here
+CLOUDINARY_API_SECRET=your_api_secret_here
 FRONTEND_URL=http://localhost:5173
 ```
 
-**Getting Firebase Credentials:**
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Select your project (or create a new one)
-3. Go to Project Settings → Service Accounts
-4. Click "Generate new private key"
-5. Download the JSON file
-6. Copy the values to your `.env` file:
-   - `project_id` → `FIREBASE_PROJECT_ID`
-   - `private_key` → `FIREBASE_PRIVATE_KEY` (keep the quotes and newlines)
-   - `client_email` → `FIREBASE_CLIENT_EMAIL`
-   - `storageBucket` → `FIREBASE_STORAGE_BUCKET`
+**Getting Cloudinary Credentials:**
+1. Sign up at [Cloudinary](https://cloudinary.com) (free tier available)
+2. Go to your Dashboard
+3. Copy the credentials:
+   - Cloud Name → `CLOUDINARY_CLOUD_NAME`
+   - API Key → `CLOUDINARY_API_KEY`
+   - API Secret → `CLOUDINARY_API_SECRET`
 
 #### Frontend Configuration
 
@@ -114,7 +109,7 @@ npm run dev
 You should see:
 ```
 MongoDB Connected: localhost
-Firebase Admin initialized successfully
+Cloudinary initialized successfully
 Cleanup job scheduled to run every 5 minutes
 Server running on port 5000
 ```
@@ -496,9 +491,10 @@ Import these request examples:
    # Expired content should be gone
    ```
 
-5. **Check Firebase Storage:**
-   - Go to Firebase Console → Storage
-   - Verify expired files are deleted
+5. **Check Cloudinary Dashboard:**
+   - Log in to your Cloudinary account
+   - Go to Media Library
+   - Verify expired files are deleted from the vaultlink folder
 
 ## Troubleshooting
 
@@ -512,13 +508,13 @@ Solution:
 3. For Atlas, ensure IP is whitelisted
 ```
 
-**Problem:** "Firebase initialization error"
+**Problem:** "Cloudinary initialization error"
 ```
 Solution:
-1. Verify FIREBASE_PRIVATE_KEY has proper format (with \n for newlines)
-2. Check all Firebase env variables are set
-3. Ensure Storage is enabled in Firebase Console
-4. Verify service account has Storage Admin role
+1. Verify all Cloudinary env variables are set correctly
+2. Check CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY, and CLOUDINARY_API_SECRET
+3. Ensure credentials are from your Cloudinary dashboard
+4. Verify your Cloudinary account is active
 ```
 
 **Problem:** "Port 5000 already in use"
@@ -562,8 +558,9 @@ Clipboard API requires HTTPS in production. For local testing:
 
 **File Upload Fails:**
 - Check file size < 10MB
-- Ensure Firebase Storage quota isn't exceeded
-- Verify Firebase Storage rules allow uploads
+- Ensure Cloudinary storage quota isn't exceeded (25GB free tier)
+- Verify Cloudinary API credentials are correct
+- Check network connectivity to Cloudinary
 
 **Content Not Found:**
 - UniqueId is case-sensitive
@@ -608,12 +605,12 @@ db.contents.find({expiresAt: {$lt: new Date(Date.now() + 600000)}}).pretty()
 db.contents.getIndexes()
 ```
 
-### Firebase Storage Monitoring
+### Cloudinary Storage Monitoring
 
-- Go to Firebase Console → Storage
-- Monitor usage and bandwidth
-- Check for uploaded files
-- Verify cleanup is working
+- Log in to Cloudinary Dashboard
+- Monitor usage and bandwidth (25GB storage, 25GB/month bandwidth on free tier)
+- Check Media Library → vaultlink folder for uploaded files
+- Verify cleanup is working (files should be deleted after expiry)
 
 ## Production Testing Checklist
 
@@ -621,7 +618,7 @@ Before deploying to production:
 
 - [ ] All environment variables configured
 - [ ] MongoDB has proper authentication
-- [ ] Firebase Storage rules configured
+- [ ] Cloudinary credentials configured correctly
 - [ ] CORS configured for production domain
 - [ ] HTTPS enabled for both frontend and backend
 - [ ] Rate limits are appropriate for expected traffic
@@ -641,7 +638,7 @@ Once local testing is complete:
 1. **Deploy Backend:**
    - Use services like Heroku, Railway, Render, or DigitalOcean
    - Set environment variables
-   - Ensure MongoDB and Firebase are accessible
+   - Ensure MongoDB and Cloudinary are accessible
 
 2. **Deploy Frontend:**
    - Build: `npm run build`
