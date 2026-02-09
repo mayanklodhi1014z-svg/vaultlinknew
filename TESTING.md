@@ -25,8 +25,8 @@ Before testing, ensure you have:
 
 ```bash
 # Clone the repository
-git clone https://github.com/mayanklodhi1014z-svg/VaultLink.git
-cd VaultLink
+git clone https://github.com/mayanklodhi1014z-svg/vaultlinknew.git
+cd vaultlinknew
 
 # Install backend dependencies
 cd backend
@@ -300,6 +300,8 @@ dist/assets/index-[hash].js
 - [ ] Paste a text share link in browser
 - [ ] Verify text is displayed in a code block
 - [ ] Verify expiry time is shown
+- [ ] **Verify countdown timer is displayed and updating every second**
+- [ ] **Verify timer format shows HH:MM:SS or MM:SS**
 - [ ] Click "Copy to Clipboard"
 - [ ] Verify copy success feedback
 - [ ] Click "Upload New Content" → Should return to upload page
@@ -307,6 +309,7 @@ dist/assets/index-[hash].js
 **File Content:**
 - [ ] Paste a file share link in browser
 - [ ] Verify file name and size are displayed
+- [ ] **Verify countdown timer is visible**
 - [ ] Click "Download File"
 - [ ] Verify file downloads successfully
 - [ ] Verify "Upload New Content" link works

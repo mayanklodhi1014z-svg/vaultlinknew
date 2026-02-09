@@ -44,7 +44,7 @@ const contentSchema = new mongoose.Schema({
     }
   },
   
-  // For file uploads: Firebase Storage URL
+  // For file uploads: Cloudinary URL
   fileUrl: {
     type: String,
     required: function() {
@@ -52,7 +52,7 @@ const contentSchema = new mongoose.Schema({
     }
   },
   
-  // For file uploads: Firebase Storage path (for deletion)
+  // For file uploads: Cloudinary public_id (for deletion)
   storagePath: {
     type: String,
     required: function() {

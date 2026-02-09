@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { getContent } from '../services/api';
 import { formatFileSize, formatDate } from '../utils/helpers';
 import CopyButton from '../components/CopyButton';
+import CountdownTimer from '../components/CountdownTimer';
 
 const SharePage = () => {
   const { uniqueId } = useParams();
@@ -79,9 +80,14 @@ const SharePage = () => {
           {/* Header */}
           <div className="bg-primary-500 text-white px-8 py-6">
             <h1 className="text-2xl font-bold mb-2">Shared Content</h1>
-            <p className="text-primary-100 text-sm">
-              Expires: {formatDate(content.expiresAt)}
-            </p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+              <p className="text-primary-100 text-sm">
+                Expires: {formatDate(content.expiresAt)}
+              </p>
+              <div className="bg-white/10 backdrop-blur-sm rounded-lg px-4 py-2">
+                <CountdownTimer expiresAt={content.expiresAt} />
+              </div>
+            </div>
           </div>
 
           {/* Content */}
