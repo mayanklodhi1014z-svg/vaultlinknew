@@ -3,6 +3,7 @@ import { uploadContent } from '../services/api';
 import TextUpload from '../components/TextUpload';
 import FileUpload from '../components/FileUpload';
 import ExpirySelector from '../components/ExpirySelector';
+import CountdownTimer from '../components/CountdownTimer';
 import { copyToClipboard } from '../utils/helpers';
 
 const UploadPage = () => {
@@ -12,6 +13,7 @@ const UploadPage = () => {
   const [expiryDate, setExpiryDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
+  const [expiresAt, setExpiresAt] = useState(null);
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
 
@@ -64,6 +66,7 @@ if (expiryDate) {
       
       if (response.success) {
         setShareUrl(response.shareUrl);
+        setExpiresAt(response.expiresAt);
         // Reset form
         setTextContent('');
         setSelectedFile(null);
@@ -87,6 +90,7 @@ if (expiryDate) {
 
   const handleNewUpload = () => {
     setShareUrl('');
+    setExpiresAt(null);
     setError('');
     setCopied(false);
   };
@@ -110,6 +114,12 @@ if (expiryDate) {
               <p className="text-gray-600">
                 Your content has been uploaded. Share the link below:
               </p>
+              
+              {expiresAt && (
+                <div className="bg-primary-500 rounded-lg px-4 py-3">
+                  <CountdownTimer expiresAt={expiresAt} />
+                </div>
+              )}
               
               <div className="bg-gray-50 p-4 rounded-lg break-all">
                 <p className="text-sm font-mono text-primary-600">{shareUrl}</p>
