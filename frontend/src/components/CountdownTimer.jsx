@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const CountdownTimer = ({ expiresAt }) => {
+const CountdownTimer = ({ expiresAt, variant = 'light' }) => {
   const [timeRemaining, setTimeRemaining] = useState(null);
   const [isExpired, setIsExpired] = useState(false);
 
@@ -43,6 +43,9 @@ const CountdownTimer = ({ expiresAt }) => {
     return () => clearInterval(interval);
   }, [expiresAt]);
 
+  const textColor = variant === 'dark' ? 'text-primary-600' : 'text-white';
+  const iconColor = variant === 'dark' ? 'text-primary-500' : 'text-white';
+
   if (isExpired) {
     return (
       <div className="flex items-center gap-2 text-red-600">
@@ -63,12 +66,12 @@ const CountdownTimer = ({ expiresAt }) => {
   return (
     <div className="flex items-center gap-3">
       <div className="flex items-center gap-2">
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className={`w-5 h-5 ${iconColor}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <span className="text-sm font-medium text-white">Expires in:</span>
+        <span className={`text-sm font-medium ${textColor}`}>Expires in:</span>
       </div>
-      <div className="font-mono text-lg font-bold text-white">
+      <div className={`font-mono text-lg font-bold ${textColor}`}>
         {timeRemaining.hours > 0 && `${formatTime(timeRemaining.hours)}:`}
         {formatTime(timeRemaining.minutes)}:{formatTime(timeRemaining.seconds)}
       </div>
