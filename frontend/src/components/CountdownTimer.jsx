@@ -13,7 +13,7 @@ const CountdownTimer = ({ expiresAt }) => {
       if (difference <= 0) {
         setIsExpired(true);
         setTimeRemaining(null);
-        return;
+        return true; // Signal that timer has expired
       }
 
       const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -22,13 +22,22 @@ const CountdownTimer = ({ expiresAt }) => {
 
       setTimeRemaining({ hours, minutes, seconds });
       setIsExpired(false);
+      return false;
     };
 
     // Calculate immediately
-    calculateTimeRemaining();
+    const hasExpired = calculateTimeRemaining();
+    
+    // Only set up interval if not already expired
+    if (hasExpired) return;
 
     // Update every second
-    const interval = setInterval(calculateTimeRemaining, 1000);
+    const interval = setInterval(() => {
+      const expired = calculateTimeRemaining();
+      if (expired) {
+        clearInterval(interval);
+      }
+    }, 1000);
 
     // Cleanup interval on component unmount
     return () => clearInterval(interval);
@@ -48,13 +57,6 @@ const CountdownTimer = ({ expiresAt }) => {
   if (!timeRemaining) {
     return null;
   }
-
-  const getTimerColor = () => {
-    const totalSeconds = timeRemaining.hours * 3600 + timeRemaining.minutes * 60 + timeRemaining.seconds;
-    if (totalSeconds < 60) return 'text-red-600'; // Less than 1 minute
-    if (totalSeconds < 300) return 'text-orange-600'; // Less than 5 minutes
-    return 'text-green-600'; // More than 5 minutes
-  };
 
   const formatTime = (value) => String(value).padStart(2, '0');
 
