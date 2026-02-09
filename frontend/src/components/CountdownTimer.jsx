@@ -68,7 +68,7 @@ const CountdownTimer = ({ expiresAt }) => {
         </svg>
         <span className="text-sm font-medium text-white">Expires in:</span>
       </div>
-      <div className={`font-mono text-lg font-bold text-white`}>
+      <div className="font-mono text-lg font-bold text-white">
         {timeRemaining.hours > 0 && `${formatTime(timeRemaining.hours)}:`}
         {formatTime(timeRemaining.minutes)}:{formatTime(timeRemaining.seconds)}
       </div>
