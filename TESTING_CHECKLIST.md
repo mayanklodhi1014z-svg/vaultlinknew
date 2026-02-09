@@ -110,6 +110,9 @@ Use this checklist to verify all features are working correctly.
 - [ ] Text content displays correctly
 - [ ] Text formatting is preserved
 - [ ] Expiry time is shown
+- [ ] **Countdown timer is visible and ticking**
+- [ ] **Timer shows correct format (HH:MM:SS or MM:SS)**
+- [ ] **Timer updates every second**
 - [ ] Copy to Clipboard button works
 - [ ] Copied feedback is shown
 - [ ] "Upload New Content" link works
@@ -119,6 +122,8 @@ Use this checklist to verify all features are working correctly.
 - [ ] File icon is displayed
 - [ ] File name is shown correctly
 - [ ] File size is formatted (KB/MB)
+- [ ] **Countdown timer displays correctly**
+- [ ] **Timer is positioned in header area**
 - [ ] Download button is visible
 - [ ] Download button works
 - [ ] File downloads with correct name

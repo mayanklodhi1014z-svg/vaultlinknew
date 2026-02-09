@@ -46,7 +46,7 @@ export const uploadContent = async (req, res) => {
         });
       }
       
-      // Upload file to Firebase Storage
+      // Upload file to Cloudinary
       const uploadResult = await uploadFileToStorage(req.file);
       
       contentData.fileName = uploadResult.fileName;

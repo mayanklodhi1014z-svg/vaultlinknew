@@ -24,7 +24,7 @@ export const startCleanupJob = () => {
 
       console.log(`Found ${expiredContent.length} expired items`);
 
-      // Delete files from Firebase Storage and remove from database
+      // Delete files from Cloudinary and remove from database
       for (const item of expiredContent) {
         try {
           // Delete file from storage if it's a file upload

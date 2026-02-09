@@ -35,6 +35,7 @@ VaultLink allows users to upload text content or files and share them securely u
 - **Dual Upload Mode**: Support for both text and file uploads
 - **Secure Link Generation**: Cryptographically secure unique IDs using nanoid
 - **Automatic Expiration**: Default 10-minute expiry with custom time selection
+- **Countdown Timer**: Real-time countdown display showing remaining time until content expires
 - **Clean UI**: Modern, responsive interface built with React and Tailwind CSS
 - **File Storage**: Cloudinary integration for reliable file hosting
 - **Automatic Cleanup**: Background cron job removes expired content every 5 minutes
@@ -70,8 +71,8 @@ VaultLink allows users to upload text content or files and share them securely u
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/mayanklodhi1014z-svg/VaultLink.git
-cd VaultLink
+git clone https://github.com/mayanklodhi1014z-svg/vaultlinknew.git
+cd vaultlinknew
 ```
 
 ### 2. Backend Setup
