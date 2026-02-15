@@ -9,6 +9,9 @@ const api = axios.create({
   },
 });
 
+// Export API_URL for use in other components
+export { API_URL };
+
 /**
  * Upload text or file content
  * @param {FormData} formData - Form data containing upload information

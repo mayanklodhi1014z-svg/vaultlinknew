@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid';
 import Content from '../models/Content.js';
 import { uploadFileToStorage } from '../services/storageService.js';
+import https from 'https';
+import http from 'http';
 
 /**
  * Upload text or file content
@@ -8,7 +10,7 @@ import { uploadFileToStorage } from '../services/storageService.js';
  */
 export const uploadContent = async (req, res) => {
   try {
-    const { type, content, expiryDate } = req.body;
+    const { type, content, expiryDate, oneTimeView } = req.body;
     
     // Generate unique ID (12 characters)
     const uniqueId = nanoid(12);
@@ -24,7 +26,8 @@ export const uploadContent = async (req, res) => {
     let contentData = {
       uniqueId,
       type,
-      expiresAt
+      expiresAt,
+      oneTimeView: oneTimeView === true || oneTimeView === 'true'
     };
     
     if (type === 'text') {
@@ -46,13 +49,14 @@ export const uploadContent = async (req, res) => {
         });
       }
       
-      // Upload file to Cloudinary
+      // Upload file to Firebase Storage
       const uploadResult = await uploadFileToStorage(req.file);
       
       contentData.fileName = uploadResult.fileName;
       contentData.fileSize = uploadResult.fileSize;
       contentData.fileUrl = uploadResult.url;
       contentData.storagePath = uploadResult.storagePath;
+      contentData.resourceType = uploadResult.resourceType || 'auto';
     }
     
     // Save to database
@@ -105,6 +109,18 @@ export const getContent = async (req, res) => {
       });
     }
     
+    // Check if it's a one-time view and has already been viewed
+    if (content.oneTimeView && content.viewCount > 0) {
+      return res.status(410).json({
+        success: false,
+        message: 'This content was a one-time view link and has already been accessed'
+      });
+    }
+    
+    // Increment view count
+    content.viewCount += 1;
+    await content.save();
+    
     // Return appropriate response based on content type
     if (content.type === 'text') {
       res.json({
@@ -119,7 +135,7 @@ export const getContent = async (req, res) => {
         type: 'file',
         fileName: content.fileName,
         fileSize: content.fileSize,
-        downloadUrl: content.fileUrl,
+        downloadUrl: `/api/download/${uniqueId}`,
         expiresAt: content.expiresAt
       });
     }
@@ -129,6 +145,70 @@ export const getContent = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to retrieve content',
+      error: error.message
+    });
+  }
+};
+
+/**
+ * Download file by unique ID
+ * GET /api/download/:uniqueId
+ */
+export const downloadFile = async (req, res) => {
+  try {
+    const { uniqueId } = req.params;
+    
+    // Find content by unique ID
+    const content = await Content.findOne({ uniqueId });
+    
+    if (!content) {
+      return res.status(404).json({
+        success: false,
+        message: 'File not found'
+      });
+    }
+    
+    // Check if content has expired
+    if (content.expiresAt < new Date()) {
+      return res.status(410).json({
+        success: false,
+        message: 'File has expired'
+      });
+    }
+    
+    // Check if it's a file type
+    if (content.type !== 'file') {
+      return res.status(400).json({
+        success: false,
+        message: 'This content is not a file'
+      });
+    }
+    
+    // Fetch file from Cloudinary and stream to client
+    const protocol = content.fileUrl.startsWith('https') ? https : http;
+    
+    protocol.get(content.fileUrl, (fileStream) => {
+      // Set headers for file download
+      res.setHeader('Content-Disposition', `attachment; filename="${encodeURIComponent(content.fileName)}"`);
+      res.setHeader('Content-Type', 'application/octet-stream');
+      res.setHeader('Content-Length', content.fileSize);
+      
+      // Pipe the file stream to response
+      fileStream.pipe(res);
+    }).on('error', (error) => {
+      console.error('Download error:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to download file',
+        error: error.message
+      });
+    });
+    
+  } catch (error) {
+    console.error('Download file error:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to download file',
       error: error.message
     });
   }

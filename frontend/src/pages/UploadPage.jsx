@@ -3,7 +3,6 @@ import { uploadContent } from '../services/api';
 import TextUpload from '../components/TextUpload';
 import FileUpload from '../components/FileUpload';
 import ExpirySelector from '../components/ExpirySelector';
-import CountdownTimer from '../components/CountdownTimer';
 import { copyToClipboard } from '../utils/helpers';
 
 const UploadPage = () => {
@@ -13,14 +12,15 @@ const UploadPage = () => {
   const [expiryDate, setExpiryDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [shareUrl, setShareUrl] = useState('');
-  const [expiresAt, setExpiresAt] = useState('');
   const [error, setError] = useState('');
   const [copied, setCopied] = useState(false);
+  const [isOneTimeView, setIsOneTimeView] = useState(false);
 
-const handleSubmit = async (e) => {
+const handleSubmit = async (e, oneTimeView = false) => {
   e.preventDefault();
   setError('');
   setShareUrl('');
+  setIsOneTimeView(oneTimeView);
   
   // Validation
   if (uploadType === 'text' && !textContent.trim()) {
@@ -38,6 +38,7 @@ const handleSubmit = async (e) => {
   try {
     const formData = new FormData();
     formData.append('type', uploadType);
+    formData.append('oneTimeView', oneTimeView);
     
     if (uploadType === 'text') {
       formData.append('content', textContent);
@@ -62,17 +63,15 @@ if (expiryDate) {
 }
 
     const response = await uploadContent(formData);
-    // ... rest of the code
-      
-      if (response.success) {
-        setShareUrl(response.shareUrl);
-        setExpiresAt(response.expiresAt);
-        // Reset form
-        setTextContent('');
-        setSelectedFile(null);
-        setExpiryDate('');
-      }
-    } catch (err) {
+    
+    if (response.success) {
+      setShareUrl(response.shareUrl);
+      // Reset form
+      setTextContent('');
+      setSelectedFile(null);
+      setExpiryDate('');
+    }
+  } catch (err) {
       setError(err.response?.data?.message || 'Upload failed. Please try again.');
       console.error('Upload error:', err);
     } finally {
@@ -90,9 +89,9 @@ if (expiryDate) {
 
   const handleNewUpload = () => {
     setShareUrl('');
-    setExpiresAt('');
     setError('');
     setCopied(false);
+    setIsOneTimeView(false);
   };
 
   if (shareUrl) {
@@ -111,6 +110,14 @@ if (expiryDate) {
                 Upload Successful!
               </h2>
               
+              {isOneTimeView && (
+                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                  <p className="text-sm text-amber-800 font-medium">
+                    ⚠️ One-time view link - This link will expire after being viewed once
+                  </p>
+                </div>
+              )}
+              
               <p className="text-gray-600">
                 Your content has been uploaded. Share the link below:
               </p>
@@ -118,12 +125,6 @@ if (expiryDate) {
               <div className="bg-gray-50 p-4 rounded-lg break-all">
                 <p className="text-sm font-mono text-primary-600">{shareUrl}</p>
               </div>
-              
-              {expiresAt && (
-                <div className="bg-primary-50 border border-primary-200 rounded-lg p-4">
-                  <CountdownTimer expiresAt={expiresAt} variant="dark" />
-                </div>
-              )}
               
               <div className="flex gap-3 justify-center">
                 <button
@@ -210,23 +211,45 @@ if (expiryDate) {
             )}
 
             {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {loading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                  </svg>
-                  Uploading...
-                </span>
-              ) : (
-                'Generate Share Link'
-              )}
-            </button>
+            <div className="flex gap-3">
+              <button
+                type="submit"
+                onClick={(e) => handleSubmit(e, false)}
+                disabled={loading}
+                className="flex-1 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading && !isOneTimeView ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Uploading...
+                  </span>
+                ) : (
+                  'Generate Share Link'
+                )}
+              </button>
+              
+              <button
+                type="button"
+                onClick={(e) => handleSubmit(e, true)}
+                disabled={loading}
+                className="flex-1 py-3 bg-amber-500 text-white rounded-lg font-medium hover:bg-amber-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading && isOneTimeView ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Uploading...
+                  </span>
+                ) : (
+                  '🔒 One-Time View Link'
+                )}
+              </button>
+            </div>
           </form>
         </div>
       </div>

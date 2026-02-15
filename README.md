@@ -2,7 +2,7 @@
 
 A secure full-stack web application for sharing text and files through generated links with automatic expiration.
 
-## 🚀 Quick Start
+##  Quick Start
 
 **Want to test it right now?** See [TESTING.md](TESTING.md) for detailed testing instructions.
 
@@ -16,31 +16,11 @@ A secure full-stack web application for sharing text and files through generated
 # 5. Test API: ./test-api.sh
 ```
 
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Setup Instructions](#setup-instructions)
-- [Testing](#testing)
-- [API Documentation](#api-documentation)
-- [Design Decisions](#design-decisions)
-- [Assumptions and Limitations](#assumptions-and-limitations)
 
 ## Overview
 
 VaultLink allows users to upload text content or files and share them securely using unique, cryptographically-generated links. Content is accessible only through the generated link and automatically expires after a specified duration (default: 10 minutes).
 
-## Features
-
-- **Dual Upload Mode**: Support for both text and file uploads
-- **Secure Link Generation**: Cryptographically secure unique IDs using nanoid
-- **Automatic Expiration**: Default 10-minute expiry with custom time selection
-- **Countdown Timer**: Real-time countdown display showing remaining time until content expires
-- **Clean UI**: Modern, responsive interface built with React and Tailwind CSS
-- **File Storage**: Cloudinary integration for reliable file hosting
-- **Automatic Cleanup**: Background cron job removes expired content every 5 minutes
-- **File Size Limits**: Maximum 10MB per upload
-- **Error Handling**: Comprehensive validation and user-friendly error messages
 
 ## Tech Stack
 
@@ -61,7 +41,8 @@ VaultLink allows users to upload text content or files and share them securely u
 - **node-cron** - Scheduled cleanup jobs
 - **express-validator** - Input validation
 
-## Setup Instructions
+
+# Setup Instructions
 
 ### Prerequisites
 - Node.js (v18 or higher)
@@ -112,7 +93,7 @@ FRONTEND_URL=http://localhost:5173
 ```bash
 npm start
 # or for development with auto-reload
-npm run dev
+npm run dev:clean
 ```
 
 Server will run on `http://localhost:5000`
@@ -138,7 +119,7 @@ VITE_API_URL=http://localhost:5000
 
 #### Start Frontend Development Server
 ```bash
-npm run dev
+npm run dev:clean
 ```
 
 Application will open at `http://localhost:5173`
@@ -147,7 +128,7 @@ Application will open at `http://localhost:5173`
 
 #### Backend
 ```bash
-cd backend
+cd backend:clean
 npm start
 ```
 
@@ -268,49 +249,6 @@ The API implements rate limiting to prevent abuse:
 
 When rate limit is exceeded, the API returns a 429 status code with a message indicating when to retry.
 
-## Testing
-
-### Quick Test
-
-Run the automated test script:
-```bash
-chmod +x test-api.sh
-./test-api.sh
-```
-
-### Manual Testing
-
-**Test Text Upload:**
-```bash
-curl -X POST http://localhost:5000/api/upload \
-  -F "type=text" \
-  -F "content=Hello World!"
-```
-
-**Test File Upload:**
-```bash
-echo "Test file" > test.txt
-curl -X POST http://localhost:5000/api/upload \
-  -F "type=file" \
-  -F "file=@test.txt"
-```
-
-**Test Content Retrieval:**
-```bash
-# Replace UNIQUE_ID with the ID from upload response
-curl http://localhost:5000/api/content/UNIQUE_ID
-```
-
-### Comprehensive Testing
-
-For detailed testing instructions including:
-- Frontend UI testing
-- End-to-end testing scenarios
-- MongoDB and Cloudinary verification
-- Production testing checklist
-
-See **[TESTING.md](TESTING.md)** for the complete testing guide.
-
 ## Design Decisions
 
 ### Why MongoDB?
@@ -341,51 +279,6 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 - **Default Expiry**: 10 minutes balances usability with storage costs
 - **Custom Expiry**: Users can set their own expiration time
 
-## Assumptions and Limitations
-
-### File Size Limits
-- **Maximum**: 10MB per upload
-- **Reasoning**: Balances user needs with storage costs and upload times
-- **Future Enhancement**: Could implement tiered limits based on user accounts
-
-### Supported File Types
-- **Current**: All file types accepted
-- **Validation**: Basic MIME type checking on upload
-- **Future Enhancement**: Could restrict to specific types (documents, images, etc.)
-
-### Rate Limiting
-- **Current**: Implemented using express-rate-limit
-- **Upload Limit**: 10 requests per 15 minutes per IP
-- **Content Retrieval**: 60 requests per minute per IP
-- **Future Enhancement**: Could implement user-based limits with authentication
-
-### Storage Costs
-- **Cloudinary Free Tier**: 25GB storage, 25GB/month bandwidth
-- **Cleanup Strategy**: 5-minute cron job minimizes storage usage
-- **Cost Scaling**: Cloudinary scales automatically with usage-based pricing
-
-### Security Considerations
-- **XSS Prevention**: Text content is sanitized before storage
-- **No Authentication**: Anyone with the link can access content
-- **No Encryption**: Files stored as-is (not encrypted at rest beyond Cloudinary's default)
-- **Future Enhancement**: Add optional password protection, one-time links
-
-### Performance
-- **Single Server**: No load balancing in current setup
-- **Database Indexing**: uniqueId and expiresAt are indexed
-- **File Streaming**: Multer uses memory storage (suitable for 10MB limit)
-- **Future Enhancement**: Implement Redis caching, CDN integration
-
-### Cleanup Job
-- **Frequency**: Every 5 minutes
-- **Trade-off**: More frequent = lower storage costs but higher CPU usage
-- **Failure Handling**: Errors logged but don't stop the job
-
-### Browser Compatibility
-- **Modern Browsers**: Tested on Chrome, Firefox, Safari (latest versions)
-- **Clipboard API**: Requires HTTPS in production
-- **File API**: Modern browser support assumed
-
 ## Data Flow Diagram
 
 ```
@@ -394,8 +287,8 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
 └─────┬───────┘
       │
       ▼
-┌─────────────────────────────────────────────┐
-│         Frontend (React + Vite)             │
+┌────────────────────────────────────────────┐
+│         Frontend (React + Vite)            │
 │  ┌──────────────┐      ┌─────────────────┐ │
 │  │ Upload Page  │      │   Share Page    │ │
 │  └──────┬───────┘      └────────┬────────┘ │
@@ -404,12 +297,12 @@ See **[TESTING.md](TESTING.md)** for the complete testing guide.
           │ POST /api/upload    │ │ GET /api/content/:id
           ▼                     ▼ ▼
 ┌──────────────────────────────────────────────┐
-│         Backend (Express.js)                  │
-│  ┌──────────────┐      ┌──────────────────┐ │
-│  │   Routes     │─────▶│  Controllers      │ │
-│  └──────────────┘      └────────┬──────────┘ │
-│                               ┌──┴──┐         │
-│                               │     │         │
+│         Backend (Express.js)                 │
+│  ┌──────────────┐      ┌──────────────────┐  │
+│  │   Routes     │─────▶│  Controllers     │  │
+│  └──────────────┘      └────────┬─────────┘  │
+│                               ┌──┴──┐        │
+│                               │     │        │
 │                         ┌─────▼─┐ ┌─▼──────┐ │
 │                         │ Upload│ │Retrieve│ │
 │                         │Service│ │Service │ │
@@ -459,4 +352,6 @@ This project is open source and available under the MIT License.
 
 ## Author
 
-Created as a portfolio project demonstrating full-stack development skills.
+Maynk Lodhi
+MTECH CSE
+25CS60R70

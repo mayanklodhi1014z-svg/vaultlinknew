@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getContent } from '../services/api';
+import { getContent, API_URL } from '../services/api';
 import { formatFileSize, formatDate } from '../utils/helpers';
 import CopyButton from '../components/CopyButton';
 
@@ -10,8 +10,20 @@ const SharePage = () => {
   const [content, setContent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const hasFetched = useRef(false);
+  const currentId = useRef(null);
 
   useEffect(() => {
+    // Reset hasFetched if uniqueId changes
+    if (currentId.current !== uniqueId) {
+      hasFetched.current = false;
+      currentId.current = uniqueId;
+    }
+    
+    // Prevent double fetch in React Strict Mode (important for one-time view links)
+    if (hasFetched.current) return;
+    hasFetched.current = true;
+
     const fetchContent = async () => {
       try {
         setLoading(true);
@@ -21,7 +33,8 @@ const SharePage = () => {
         if (err.response?.status === 403) {
           setError('Content not found or invalid link');
         } else if (err.response?.status === 410) {
-          setError('This content has expired');
+          const message = err.response?.data?.message || 'This content has expired';
+          setError(message);
         } else {
           setError('Failed to load content. Please try again.');
         }
@@ -117,9 +130,8 @@ const SharePage = () => {
 
                 <div className="flex justify-end">
                   <a
-                    href={content.downloadUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                    href={`${API_URL}${content.downloadUrl}`}
+                    download={content.fileName}
                     className="inline-flex items-center gap-2 px-6 py-3 bg-primary-500 text-white rounded-lg font-medium hover:bg-primary-600 transition"
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

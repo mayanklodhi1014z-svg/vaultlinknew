@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "kill-port": "lsof -ti:5173 | xargs kill -9 2>/dev/null || true",
+    "dev:clean": "npm run kill-port && npm run dev"
   },
   "dependencies": {
     "axios": "^1.6.2",

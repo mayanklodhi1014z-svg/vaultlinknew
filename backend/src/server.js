@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/database.js';
-import { initializeCloudinary } from './config/cloudinary.js';
+import { initializeCloudinary } from './config/cloudinary.js'; // Changed this line
 import { startCleanupJob } from './services/cleanupService.js';
 import contentRoutes from './routes/contentRoutes.js';
 
@@ -54,7 +54,7 @@ const startServer = async () => {
     // Connect to database
     await connectDB();
     
-    // Initialize Cloudinary
+    // Initialize Cloudinary (changed from Firebase)
     initializeCloudinary();
     
     // Start cleanup job

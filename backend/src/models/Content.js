@@ -44,7 +44,7 @@ const contentSchema = new mongoose.Schema({
     }
   },
   
-  // For file uploads: Cloudinary URL
+  // For file uploads: Firebase Storage URL
   fileUrl: {
     type: String,
     required: function() {
@@ -52,12 +52,18 @@ const contentSchema = new mongoose.Schema({
     }
   },
   
-  // For file uploads: Cloudinary public_id (for deletion)
+  // For file uploads: Firebase Storage path (for deletion)
   storagePath: {
     type: String,
     required: function() {
       return this.type === 'file';
     }
+  },
+  
+  // For file uploads: Cloudinary resource type (auto, raw, image, video)
+  resourceType: {
+    type: String,
+    default: 'auto'
   },
   
   // Expiration timestamp - content becomes inaccessible after this
@@ -67,29 +73,24 @@ const contentSchema = new mongoose.Schema({
     index: true // Index for efficient cleanup queries
   },
   
+  // One-time view flag - if true, content can only be viewed once
+  oneTimeView: {
+    type: Boolean,
+    default: false
+  },
+  
+  // View count - tracks how many times content has been accessed
+  viewCount: {
+    type: Number,
+    default: 0
+  },
+  
   // Creation timestamp
   createdAt: {
     type: Date,
     default: Date.now
-  },
-
-  // One-time view support
-  oneTime: {
-    type: Boolean,
-    default: false
-  },
-  viewedAt: {
-    type: Date,
-    default: null
-  },
-  viewCount: {
-    type: Number,
-    default: 0
   }
 });
-
-// Index for cleanup job - finds expired content efficiently
-contentSchema.index({ expiresAt: 1 });
 
 const Content = mongoose.model('Content', contentSchema);
 
