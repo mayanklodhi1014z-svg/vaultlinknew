@@ -71,6 +71,20 @@ const contentSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now
+  },
+
+  // One-time view support
+  oneTime: {
+    type: Boolean,
+    default: false
+  },
+  viewedAt: {
+    type: Date,
+    default: null
+  },
+  viewCount: {
+    type: Number,
+    default: 0
   }
 });
 
